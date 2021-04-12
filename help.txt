@@ -1,0 +1,17 @@
+definition: 
+    fetch last 20 line of logfile FROM /var/log folder and output it on command line interface (CLI)
+
+usage:
+    - ./index [-h | LOGFILEPATH]
+    - ./index [LOGFILEPATH] [-t | -o] [[json | text] | DESTPATH]
+    - ./index [LOGFILEPATH] -t [json | text] -o [DESTPATH]
+
+options:
+    -h : call app help documentation
+            example: ./index -h
+    -o : put logfile into other destination
+            example: ./index LOGFILEPATH -o DESPATH
+                     ./index LOGFILEPATH -t [json | text] -o DESPATH
+    -t : fetch logfile and put it on a file. MUST ADD data type [text | json]
+            example: ./index LOGFILEPATH -t json
+                     ./index LOGFILEPATH -t text
