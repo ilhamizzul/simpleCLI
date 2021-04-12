@@ -60,7 +60,9 @@ def fetchHelp():
     help = open("help.txt")    
     return print(help.read())
 
-if(argLength == 1):
+if(argLength == 0):
+    print('show help : ./index -h')
+elif(argLength == 1):
     if (inputValue[0] in flagType[0]):
         fetchHelp()
     else:
