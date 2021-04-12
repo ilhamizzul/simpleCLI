@@ -1,0 +1,106 @@
+#!/usr/bin/env python3
+import os
+from os import path
+import sys
+import json
+
+inputValue = sys.argv[1:]
+argLength = len(inputValue)
+printType = ['json', 'text']
+flagType = [['-h'],['-t', '-o']]
+
+def filePathExist(filepath):
+    return path.exists(filepath) and path.isfile(filepath) and '/var/log' in filepath
+
+def pathExist(filepath):
+    return path.exists(filepath)
+
+def fetchLog(filepath):
+    os.chdir('../')
+    if (filePathExist):
+        return os.system('tail --lines=20 '+ filepath)
+    return 'ERROR: invalid command or file path'
+
+def convertJSON(filepath):
+    i = 1
+    result = []
+    os.system('tail --lines=20 '+ filepath + ' > temp.txt')
+    with open('temp.txt') as file:
+        lines = file.readlines()
+        for line in lines:
+            result.append({str(i): line})
+            i += 1
+    with open('logfile.json', 'w') as fp:
+        json.dump(result, fp) 
+    os.system('rm temp.txt')  
+    return 'logfile.json'
+
+def fetchLognPrint(argArray):
+    if (argArray[1] == '-t'):
+        if (argLength > 3) :
+            if(argArray[3] == '-o'):
+                if(argArray[2] == 'json'):
+                    os.system('mv ' + convertJSON(argArray[0]) + ' ' + argArray[4])
+                else:
+                    os.system('tail --lines=20 '+ argArray[0] + ' > logfile.txt & ' + 'mv ' + argArray[0] + ' ' + argArray[4])
+            else:
+                print('ERROR: invalid flag')
+                return
+        else:
+            if(argArray[2] == 'json'):
+                convertJSON(argArray[0])
+            else:
+                os.system('tail --lines=20 '+ argArray[0] + ' > logfile.txt')
+    else:
+        os.system('tail --lines=20 '+ argArray[0] + ' > logfile.txt & mv logfile.txt ' + argArray[2])
+    print('1 new file created')
+    return
+
+def fetchHelp():
+    help = open("help.txt")    
+    return print(help.read())
+
+if(argLength == 1):
+    if (inputValue[0] in flagType[0]):
+        fetchHelp()
+    else:
+        while True:
+            if (not filePathExist(inputValue[0])):
+                print('ERROR: invalid command, file path, or file path is not into /var/log')
+                break    
+            print(fetchLog(inputValue[0]))
+            break
+elif(argLength == 3):
+    while True:
+        if (not filePathExist(inputValue[0])):
+            print('ERROR: invalid command or file path')
+            break
+
+        if (inputValue[1] not in flagType[1]):
+            print('ERROR: invalid flag')
+            break
+        
+        if (inputValue[2] not in printType and inputValue[1] == '-t'):
+            print('ERROR: invalid file type')
+            break
+        
+        fetchLognPrint(inputValue)
+        break
+elif(argLength == 5):
+    while True:
+        if (not filePathExist(inputValue[0])):
+            print('ERROR: invalid command, file path, or file path is not into /var/log')
+            break
+
+        if (inputValue[1] not in flagType[1]):
+            print('ERROR: invalid flag')
+            break
+        
+        if (inputValue[2] not in printType and inputValue[1] == '-t'):
+            print('ERROR: invalid file type')
+            break
+        
+        fetchLognPrint(inputValue)
+        break
+else:
+    print('ERROR: invalid command')
